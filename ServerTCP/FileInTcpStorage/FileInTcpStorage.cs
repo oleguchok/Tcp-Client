@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileInTcpStorage
+namespace TcpStorageLibrary
 {
+    [Serializable]
     public class FileInTcpStorage
     {
         public string Name { get; set; }

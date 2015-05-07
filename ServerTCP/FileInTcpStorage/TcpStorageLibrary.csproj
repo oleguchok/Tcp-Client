@@ -7,8 +7,8 @@
     <ProjectGuid>{1BB2ADC1-F011-4A76-AA26-696687E294B5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileInTcpStorage</RootNamespace>
-    <AssemblyName>FileInTcpStorage</AssemblyName>
+    <RootNamespace>TcpStorageLibrary</RootNamespace>
+    <AssemblyName>TcpStorageLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EndPointSetter.cs" />
     <Compile Include="FileInTcpStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

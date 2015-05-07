@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTCP", "ServerTCP\ServerTCP.csproj", "{D500C831-A3B7-4364-81BF-FE9984F35D1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileInTcpStorage", "FileInTcpStorage\FileInTcpStorage.csproj", "{1BB2ADC1-F011-4A76-AA26-696687E294B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpStorageLibrary", "FileInTcpStorage\TcpStorageLibrary.csproj", "{1BB2ADC1-F011-4A76-AA26-696687E294B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

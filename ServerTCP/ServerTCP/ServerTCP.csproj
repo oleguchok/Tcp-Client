@@ -48,9 +48,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileInTcpStorage\FileInTcpStorage.csproj">
+    <ProjectReference Include="..\FileInTcpStorage\TcpStorageLibrary.csproj">
       <Project>{1bb2adc1-f011-4a76-aa26-696687e294b5}</Project>
-      <Name>FileInTcpStorage</Name>
+      <Name>TcpStorageLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
