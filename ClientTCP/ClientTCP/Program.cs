@@ -37,28 +37,30 @@ namespace ClientTCP
 
         private static void GetFileFromServer(int port)
         {
-            EndPointSetter endPoint = new EndPointSetter(Dns.GetHostEntry("localhost"),
-                                                            0, port);
-            Socket sender = new Socket(endPoint.IPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            sender.Connect(endPoint.IPEndPoint);
             FileInTcpStorage fileInfo = GetFileInfo();
 
             Stream streamFileInfo = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(streamFileInfo, fileInfo);
-
+            streamFileInfo.Position = 0;
             byte[] msg = new byte[streamFileInfo.Length];
-            streamFileInfo.Read(msg,0,(int)streamFileInfo.Length);
+            streamFileInfo.Read(msg, 0, (int)streamFileInfo.Length);
             streamFileInfo.Close();
 
             byte[] response = new byte[fileInfo.SizeOfBlock];
+
+            EndPointSetter endPoint = new EndPointSetter(Dns.GetHostEntry("localhost"),
+                                                            0, port);
+            Socket sender = new Socket(endPoint.IPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            sender.Connect(endPoint.IPEndPoint);
+            
 
             sender.Send(msg);
 
             sender.Receive(response);
 
-            FileStream file = new FileStream(@"../Files/" + fileInfo.Name, FileMode.Create);
+            FileStream file = new FileStream(@"D:\GitHub\Tcp-Client\Uploads\" + fileInfo.Name, FileMode.Create);
             file.Write(response, 0, response.Length);
             file.Close();
 
