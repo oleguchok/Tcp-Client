@@ -12,6 +12,24 @@ namespace ClientTCP
     {
         static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            ConsoleKeyInfo action;
+            do
+            {
+                ShowHelp();
+                action = Console.ReadKey();
+                switch (action.KeyChar)
+                {
+                    case '1':
+                        break;
+                    case '2':
+                        break;
+                    case '3':
+                        break;
+                    default:
+                        break;
+                }
+            } while (action.Key != ConsoleKey.D0);
             try
             {
                 SendMessageFromSocket(11000);
@@ -24,6 +42,16 @@ namespace ClientTCP
             {
                 Console.ReadLine();
             }
+        }
+
+        private static void ShowHelp()
+        {
+            Console.WriteLine("\tTcp Client");
+            Console.WriteLine("1 - Show Files on server");
+            Console.WriteLine("2 - Get File");
+            Console.WriteLine("3 - Show Help");
+            Console.WriteLine("0 - exit");
+            Console.WriteLine("Press key:");
         }
 
         static void SendMessageFromSocket(int port)

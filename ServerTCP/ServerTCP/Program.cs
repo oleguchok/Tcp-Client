@@ -38,7 +38,7 @@ namespace ServerTCP
 
                     byte[] bytes = new byte[1024];
                     int bytesRec = handler.Receive(bytes);
-
+                    FileInTcpStorage.FileInTcpStorage File = new FileInTcpStorage.FileInTcpStorage();
                     data += Encoding.UTF8.GetString(bytes, 0, bytesRec);
 
                     // Показываем данные на консоли
