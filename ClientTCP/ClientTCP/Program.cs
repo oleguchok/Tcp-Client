@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using TcpStorageLibrary;
 
 namespace ClientTCP
 {
@@ -22,7 +25,7 @@ namespace ClientTCP
                 {
                     case '1': ShowFilesOnServer();
                         break;
-                    case '2': GetFileFromServer();
+                    case '2': GetFileFromServer(11000);
                         break;
                     case '3':
                         break;
@@ -32,9 +35,36 @@ namespace ClientTCP
             } while (action.Key != ConsoleKey.D0);
         }
 
-        private static void GetFileFromServer()
+        private static void GetFileFromServer(int port)
         {
+            EndPointSetter endPoint = new EndPointSetter(Dns.GetHostEntry("localhost"),
+                                                            0, port);
+            Socket sender = new Socket(endPoint.IPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
+            sender.Connect(endPoint.IPEndPoint);
+            FileInTcpStorage fileInfo = GetFileInfo();
+
+            Stream streamFileInfo = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(streamFileInfo, fileInfo);
+
+            byte[] msg = new byte[streamFileInfo.Length];
+            streamFileInfo.Read(msg,0,(int)streamFileInfo.Length);
+            streamFileInfo.Close();
+
+            byte[] response = new byte[fileInfo.SizeOfBlock];
+
+            sender.Send(msg);
+
+            sender.Receive(response);
+
+            FileStream file = new FileStream(@"../Files/" + fileInfo.Name, FileMode.Create);
+            file.Write(response, 0, response.Length);
+            file.Close();
+
+            sender.Shutdown(SocketShutdown.Both);
+            sender.Close();
+            Console.WriteLine("File was downloaded!");
         }
 
         private static void ShowFilesOnServer()
@@ -52,9 +82,42 @@ namespace ClientTCP
             Console.WriteLine("Press key:");
         }
 
-        static void SendMessageFromSocket(int port)
+        private static FileInTcpStorage GetFileInfo()
         {
+            bool isError = false;
+            FileInTcpStorage file = new FileInTcpStorage();
+            Console.WriteLine("Enter File name");
+            file.Name = Console.ReadLine();
+            do
+            {
+                try
+                {
+                    Console.WriteLine("Enter Offset");
+                    file.Offset = Convert.ToInt32(Console.ReadLine());
+                    isError = false;
+                }
+                catch
+                {
+                    Console.WriteLine("Incorrect input");
+                    isError = true;
+                }
+            } while (isError != false);
+            do
+            {
+                try
+                {
+                    Console.WriteLine("Enter Size of Block");
+                    file.SizeOfBlock = Convert.ToInt32(Console.ReadLine());
+                    isError = false;
+                }
+                catch
+                {
+                    Console.WriteLine("Incorrect input");
+                    isError = true;
+                }
+            } while (isError != false);
             
+            return file;
         }
     }
 }

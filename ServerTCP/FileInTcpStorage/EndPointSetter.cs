@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TcpStorageLibrary
 {
-    class EndPointSetter
+    public class EndPointSetter
     {
         private IPHostEntry ipHost = null;
         private IPAddress ipAddress = null;
@@ -17,10 +17,10 @@ namespace TcpStorageLibrary
         public IPAddress IPAddress { get { return ipAddress; } }
         public IPEndPoint IPEndPoint { get { return ipEndPoint; } }
 
-        public EndPointSetter(IPHostEntry _ipHost, IPAddress _ipAddress, int port)
+        public EndPointSetter(IPHostEntry _ipHost, int addressNumber, int port)
         {
             ipHost = _ipHost;
-            ipAddress = _ipAddress;
+            ipAddress = ipHost.AddressList[addressNumber];
             ipEndPoint = new IPEndPoint(ipAddress, port);
         }
     }
