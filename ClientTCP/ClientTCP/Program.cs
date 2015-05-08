@@ -25,7 +25,11 @@ namespace ClientTCP
                 {
                     case '1': ShowFilesOnServer();
                         break;
-                    case '2': GetFileFromServer(11000);
+                    case '2':
+                        FileInTcpStorage fileInfo = GetFileInfo();
+                        byte[] response = new byte[fileInfo.SizeOfBlock];
+                        SendMessage(11000, MessageToRequestFile(fileInfo),ref response);
+                        WriteFileInUploads(response, fileInfo);
                         break;
                     case '3':
                         break;
@@ -35,10 +39,32 @@ namespace ClientTCP
             } while (action.Key != ConsoleKey.D0);
         }
 
-        private static void GetFileFromServer(int port)
-        {
-            FileInTcpStorage fileInfo = GetFileInfo();
+        private static void SendMessage(int port, byte[] msg,ref byte[] response)
+        {   
+            EndPointSetter endPoint = new EndPointSetter(Dns.GetHostEntry("localhost"),
+                                                            0, port);
+            Socket sender = new Socket(endPoint.IPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
+            sender.Connect(endPoint.IPEndPoint);            
+
+            sender.Send(msg);
+
+            sender.Receive(response);           
+
+            sender.Shutdown(SocketShutdown.Both);
+            sender.Close();
+            Console.WriteLine("File was downloaded!");
+        }
+
+        private static void WriteFileInUploads(byte[] buf, FileInTcpStorage fileInfo)
+        {
+            FileStream file = new FileStream(@"D:\GitHub\Tcp-Client\Uploads\" + fileInfo.Name, FileMode.Create);
+            file.Write(buf, 0, buf.Length);
+            file.Close();
+        }
+
+        private static byte[] MessageToRequestFile(FileInTcpStorage fileInfo)
+        {
             Stream streamFileInfo = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(streamFileInfo, fileInfo);
@@ -47,26 +73,7 @@ namespace ClientTCP
             streamFileInfo.Read(msg, 0, (int)streamFileInfo.Length);
             streamFileInfo.Close();
 
-            byte[] response = new byte[fileInfo.SizeOfBlock];
-
-            EndPointSetter endPoint = new EndPointSetter(Dns.GetHostEntry("localhost"),
-                                                            0, port);
-            Socket sender = new Socket(endPoint.IPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            sender.Connect(endPoint.IPEndPoint);
-            
-
-            sender.Send(msg);
-
-            sender.Receive(response);
-
-            FileStream file = new FileStream(@"D:\GitHub\Tcp-Client\Uploads\" + fileInfo.Name, FileMode.Create);
-            file.Write(response, 0, response.Length);
-            file.Close();
-
-            sender.Shutdown(SocketShutdown.Both);
-            sender.Close();
-            Console.WriteLine("File was downloaded!");
+            return msg;
         }
 
         private static void ShowFilesOnServer()

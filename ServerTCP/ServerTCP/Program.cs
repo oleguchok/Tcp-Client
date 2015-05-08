@@ -33,9 +33,12 @@ namespace ServerTCP
                     handler.Receive(buf);
                     BinaryFormatter formatter = new BinaryFormatter();
                     Stream stream = new MemoryStream(buf, 0, buf.Length);
-                    FileInTcpStorage file = (FileInTcpStorage)formatter.Deserialize(stream);
-                    byte[] response = GetFileBytes(file);
-                    handler.Send(response);
+                    object obj = formatter.Deserialize(stream);
+                    if (obj is FileInTcpStorage)
+                    {
+                        byte[] response = GetFileBytes(obj as FileInTcpStorage);
+                        handler.Send(response);
+                    }
 
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
