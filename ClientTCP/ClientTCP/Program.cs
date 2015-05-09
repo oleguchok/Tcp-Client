@@ -21,9 +21,14 @@ namespace ClientTCP
             {
                 ShowHelp();
                 action = Console.ReadKey();
+                Console.WriteLine();
                 switch (action.KeyChar)
                 {
-                    case '1': ShowFilesOnServer();
+                    case '1': 
+                        byte[] msg = MessageToRequestFile("List");
+                        byte[] list = new byte[100000];
+                        SendMessage(11000, msg, ref list);
+                        ShowFilesOnServer(list);
                         break;
                     case '2':
                         FileInTcpStorage fileInfo = GetFileInfo();
@@ -32,6 +37,7 @@ namespace ClientTCP
                         WriteFileInUploads(response, fileInfo);
                         break;
                     case '3':
+                        ShowHelp();
                         break;
                     default:
                         break;
@@ -53,7 +59,6 @@ namespace ClientTCP
 
             sender.Shutdown(SocketShutdown.Both);
             sender.Close();
-            Console.WriteLine("File was downloaded!");
         }
 
         private static void WriteFileInUploads(byte[] buf, FileInTcpStorage fileInfo)
@@ -61,6 +66,7 @@ namespace ClientTCP
             FileStream file = new FileStream(@"D:\GitHub\Tcp-Client\Uploads\" + fileInfo.Name, FileMode.Create);
             file.Write(buf, 0, buf.Length);
             file.Close();
+            Console.WriteLine("File was downloaded!");
         }
 
         private static byte[] MessageToRequestFile(FileInTcpStorage fileInfo)
@@ -76,9 +82,19 @@ namespace ClientTCP
             return msg;
         }
 
-        private static void ShowFilesOnServer()
+        private static byte[] MessageToRequestFile(string str)
         {
-            
+            byte[] msg = Encoding.Default.GetBytes(str);
+            return msg;
+        }
+
+        private static void ShowFilesOnServer(byte[] buf)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            Stream stream = new MemoryStream(buf, 0, buf.Length);
+            List<string> list = (List<string>)formatter.Deserialize(stream);
+            foreach(string s in list)
+                Console.WriteLine(s);
         }
 
         private static void ShowHelp()
